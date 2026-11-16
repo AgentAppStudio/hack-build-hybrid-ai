@@ -9,7 +9,7 @@ import {
 } from "firebase/ai";
 
 export const InferenceMode = (
-  firebaseAi as Record<string, Record<string, string>>
+  firebaseAi as unknown as Record<string, Record<string, string>>
 ).InferenceMode ?? {
   PREFER_ON_DEVICE: "prefer_on_device",
   ONLY_ON_DEVICE: "only_on_device",
