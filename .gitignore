@@ -1,5 +1,9 @@
-.antigravity/
-.agent/
-.claude/
+node_modules/
+dist/
+.env
+test-results/
+playwright-report/
 .DS_Store
-videos/
+videos/*.webm
+videos/*.mp3
+videos/*.wav

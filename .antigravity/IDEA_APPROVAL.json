@@ -1,0 +1,17 @@
+{
+  "approval_status": "approved",
+  "approved_idea": {
+    "option_id": "A",
+    "name": "DOMShield Hybrid: Zero-Latency On-Device Anti-Scam, Dark-Pattern & Phishing Firewall",
+    "pitch": "Tiện ích Chrome & Web App dùng Gemini Nano 4 On-Device thông qua Firebase AI Logic Hybrid SDK để quét tức thì cấu trúc DOM, điều khoản ẩn và bẫy giao diện (Dark Patterns / Fake Checkout) ngay trên máy người dùng với độ trễ 0ms và quyền riêng tư tuyệt đối; tự động fallback lên Cloud Gemini qua Firebase AI Logic khi phát hiện chiến dịch lừa đảo đa tên miền cần đối chiếu sâu với Firestore & App Check.",
+    "winning_angle": "Khác hoàn toàn các ví dụ notes/PDF reader/coach/game master của Google; tận dụng trực diện thế mạnh riêng tư & độ trễ tức thì của Chrome built-in Gemini Nano 4 kết hợp Firebase App Check, Remote Config và Firestore.",
+    "tech_stack": [
+      "Chrome Extension (Manifest V3) & Next.js Web App",
+      "Firebase AI Logic Hybrid Inference SDK (Gemini Nano 4 + Cloud Fallback)",
+      "Firebase App Check, Auth, Firestore & Remote Config",
+      "TypeScript"
+    ]
+  },
+  "slug": "build-hybrid-ai",
+  "hackathon_title": "#BuildHybridAI 2026"
+}

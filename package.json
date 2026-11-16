@@ -1,0 +1,37 @@
+{
+  "name": "domshield-hybrid",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm:dev:server\" \"npm:dev:client\"",
+    "start": "node dist/server/index.js",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json",
+    "test": "tsx --test tests/*.test.ts",
+    "benchmark": "tsx server/benchmark/cli.ts",
+    "check": "npm run typecheck && npm test && npm run build && npm run test:e2e",
+    "dev:server": "PORT=3001 tsx watch server/index.ts",
+    "dev:client": "vite",
+    "test:e2e": "playwright test --project=chromium"
+  },
+  "dependencies": {
+    "firebase": "^11.10.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.3.0"
+  }
+}
