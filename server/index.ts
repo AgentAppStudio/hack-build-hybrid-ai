@@ -53,7 +53,10 @@ export function createDomShieldServer(): http.Server {
       return;
     }
 
-    if (pathname === "/api/health" && req.method === "GET") {
+    if (
+      (pathname === "/api/health" || pathname === "/healthz") &&
+      req.method === "GET"
+    ) {
       sendJson(res, 200, {
         status: "ok",
         service: "domshield-hybrid-firewall",
