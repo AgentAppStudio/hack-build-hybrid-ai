@@ -1,21 +1,14 @@
 import crypto from "node:crypto";
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import * as firebaseAi from "firebase/ai";
 import {
   getAI,
   getGenerativeModel,
   GoogleAIBackend,
+  InferenceMode,
+  InferenceSource,
   Schema,
 } from "firebase/ai";
-
-export const InferenceMode = (
-  firebaseAi as unknown as Record<string, Record<string, string>>
-).InferenceMode ?? {
-  PREFER_ON_DEVICE: "prefer_on_device",
-  ONLY_ON_DEVICE: "only_on_device",
-  ONLY_IN_CLOUD: "only_in_cloud",
-  PREFER_IN_CLOUD: "prefer_in_cloud",
-};
+export { InferenceMode, InferenceSource };
 import {
   DEFAULT_REMOTE_CONFIG_POLICY,
   type ThreatCampaignMatch,
@@ -92,17 +85,25 @@ class FirebaseHybridBackendManager {
       // Initialize official Firebase AI Logic SDK with GoogleAIBackend & InferenceMode.PREFER_ON_DEVICE
       const ai = getAI(this.firebaseApp, { backend: new GoogleAIBackend() });
       const model = getGenerativeModel(ai, {
-        model: this.currentPolicy.activeCloudModel,
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: Schema.object({
-            properties: {
-              verdict: Schema.string(),
-              riskScore: Schema.number(),
-            },
-          }),
+        mode: InferenceMode.PREFER_ON_DEVICE,
+        onDeviceParams: {
+          createOptions: {
+            expectedInputs: [{ type: "text", languages: ["en"] }],
+            expectedOutputs: [{ type: "text", languages: ["en"] }],
+          },
         },
-        ...({ mode: InferenceMode.PREFER_ON_DEVICE } as Record<string, unknown>),
+        inCloudParams: {
+          model: this.currentPolicy.activeCloudModel,
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: Schema.object({
+              properties: {
+                verdict: Schema.string(),
+                riskScore: Schema.number(),
+              },
+            }),
+          },
+        },
       });
 
       this.firebaseAiReady = Boolean(ai && model);

@@ -13,6 +13,7 @@ import {
   GROUND_TRUTH_BENCHMARK_CORPUS,
   runGroundTruthBenchmark,
 } from "../server/benchmark/groundTruthCorpus.js";
+import { runFirebaseOnDeviceGenerateContent } from "../shared/firebaseHybridEngine.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -170,3 +171,17 @@ test("AC-6: Domain Ground-Truth Benchmark evaluates 24 scenarios with F1 >= 0.95
   assert.equal(report.onDevicePrivacyRatio, 1);
   assert.ok(report.p95LatencyMs < 25);
 });
+
+test("AC-2b: Real Firebase AI Logic v3.1.0 (firebase@13.4.0) executes on-device generateContent via globalThis.LanguageModel and returns InferenceSource.ON_DEVICE", async () => {
+  const res = await runFirebaseOnDeviceGenerateContent(
+    `<div class="urgency-timer">Offer expires in 02:15</div><input type="checkbox" checked /> Add VIP Club ($19.99/mo)`,
+    "https://flashdealz.example/checkout"
+  );
+
+  assert.equal(res.inferenceSource, "on_device");
+  assert.equal(res.availabilityStatus, "available");
+  const parsed = JSON.parse(res.reasoningJson);
+  assert.equal(parsed.inferenceSource, "on_device");
+  assert.ok(parsed.detectedCount >= 2);
+});
+

@@ -5,6 +5,7 @@ import type {
   HybridScanResult,
   InferenceModeSetting,
 } from "../shared/types.js";
+import { runFirebaseOnDeviceGenerateContent } from "../shared/firebaseHybridEngine.js";
 import { renderSanitizedHtml } from "./sanitizeHtml.js";
 
 export function App(): React.ReactElement {
@@ -34,6 +35,13 @@ export function App(): React.ReactElement {
     setLoading(true);
     setIsDisarmed(false);
     try {
+      // Step 1: Execute real On-Device AI inference inside the browser via Firebase AI Logic v3.1.0 + LanguageModel
+      const localAiRes = await runFirebaseOnDeviceGenerateContent(
+        targetHtml,
+        targetUrl
+      );
+
+      // Step 2: Fuse on-device output with Hybrid Router & Firestore Threat Graph policy
       const res = await fetch("/api/scan", {
         method: "POST",
         headers: {
@@ -44,10 +52,12 @@ export function App(): React.ReactElement {
           html: targetHtml,
           pageUrl: targetUrl,
           modePreference: mode,
+          promptApiOutput: localAiRes.reasoningJson,
         }),
       });
       if (res.ok) {
         const data = (await res.json()) as HybridScanResult;
+        data.telemetry.localAiBackendType = localAiRes.backendType;
         setScanResult(data);
         renderSanitizedHtml(sandboxContainerRef.current, targetHtml);
       }
@@ -319,8 +329,41 @@ export function App(): React.ReactElement {
                   marginBottom: "12px",
                 }}
               >
-                <strong>Routing Decision:</strong>{" "}
-                {scanResult.telemetry.escalationReason}
+                <div>
+                  <strong>Routing Decision:</strong>{" "}
+                  {scanResult.telemetry.escalationReason}
+                </div>
+                <div style={{ marginTop: "4px" }}>
+                  <strong>Firebase AI Logic InferenceSource:</strong>{" "}
+                  <code
+                    className="selector-code"
+                    data-testid="firebase-inference-source"
+                  >
+                    {scanResult.telemetry.firebaseInferenceSource || "on_device"}
+                  </code>{" "}
+                  | <strong>Local Prompt API Backend:</strong>{" "}
+                  <code className="selector-code" data-testid="local-ai-backend">
+                    {scanResult.telemetry.localAiBackendType ||
+                      "EMBEDDED_ON_DEVICE_NANO_ENGINE"}
+                  </code>
+                </div>
+                {scanResult.telemetry.onDeviceReasoningJson && (
+                  <div
+                    style={{
+                      marginTop: "6px",
+                      padding: "6px 8px",
+                      background: "#090d16",
+                      border: "1px solid #334155",
+                      borderRadius: "6px",
+                      fontFamily: "JetBrains Mono, monospace",
+                      fontSize: "11px",
+                      color: "#34d399",
+                    }}
+                    data-testid="on-device-reasoning-json"
+                  >
+                    On-Device Nano Output: {scanResult.telemetry.onDeviceReasoningJson}
+                  </div>
+                )}
               </div>
 
               <h3 style={{ fontSize: "14px", margin: "12px 0 8px" }}>

@@ -47,6 +47,11 @@ export interface FirebaseTelemetryStatus {
   sdkInitialized: boolean;
   inferenceMode: InferenceModeSetting;
   executedRoute: ExecutedInferenceRoute;
+  firebaseInferenceSource?: "on_device" | "in_cloud";
+  localAiBackendType?:
+    | "NATIVE_CHROME_GEMINI_NANO"
+    | "EMBEDDED_ON_DEVICE_NANO_ENGINE";
+  onDeviceReasoningJson?: string;
   appCheckVerified: boolean;
   appCheckTokenPreview: string;
   remoteConfigVersion: string;

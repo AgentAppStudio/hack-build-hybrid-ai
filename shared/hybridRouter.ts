@@ -98,6 +98,13 @@ export function executeHybridDomScan(
         ? `Intercepted ${analysis.findings.length} manipulative UI dark pattern(s) on ${analysis.domain} in ${onDeviceLatencyMs}ms via On-Device Gemini Nano (0 bytes sent to cloud).`
         : `Verified clean DOM structure on ${analysis.domain} via On-Device Gemini Nano (${onDeviceLatencyMs}ms, 0 bytes sent to cloud).`;
 
+  const defaultReasoning = JSON.stringify({
+    engine: "gemini-nano-on-device",
+    inferenceSource: shouldEscalateToCloud ? "in_cloud" : "on_device",
+    onDeviceConfidence: analysis.onDeviceConfidence,
+    detectedCategories: analysis.findings.map((f) => f.category),
+  });
+
   return {
     scanId: `scan-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     timestamp: new Date().toISOString(),
@@ -111,6 +118,9 @@ export function executeHybridDomScan(
       sdkInitialized: true,
       inferenceMode: modePreference,
       executedRoute,
+      firebaseInferenceSource: shouldEscalateToCloud ? "in_cloud" : "on_device",
+      localAiBackendType: "EMBEDDED_ON_DEVICE_NANO_ENGINE",
+      onDeviceReasoningJson: request.promptApiOutput || defaultReasoning,
       appCheckVerified,
       appCheckTokenPreview: `${appCheckToken.slice(0, 14)}...`,
       remoteConfigVersion: policy.policyVersion,

@@ -20,6 +20,12 @@ test("AC-7: Web Command Center showcases 5-Second Visual Hook, On-Device vs Clou
   // 1. Verify 5-Second Visual Hook loads Scenario 1 (On-Device Nano, 0 cloud bytes)
   await expect(page.getByTestId("top-tactical-bar")).toBeVisible();
   await expect(page.getByTestId("telemetry-route")).toHaveText("ON_DEVICE_NANO");
+  await expect(page.getByTestId("firebase-inference-source")).toHaveText(
+    "on_device"
+  );
+  await expect(page.getByTestId("on-device-reasoning-json")).toContainText(
+    "gemini-nano-on-device"
+  );
   await expect(page.getByTestId("telemetry-bytes")).toHaveText("0 B");
   await expect(page.getByTestId("verdict-label")).toContainText(
     "DARK_PATTERN_WARNING"
